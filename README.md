@@ -7,7 +7,12 @@ Project for CS665: Introduction to Database Systems JK
 
 Problem Definition and Mobile Scope: 
 
+There are companies that specialize in matching companies that need temporary work to workers (For example, a moving company needs people for a single afternoon shift). The goal of this project is to create an app that sort of replicates what those companies perform as an app. Both workers and companies can post/upload requirements, and then the system will match up appropriate combinations so that workers are matched with companies.
+In order to limit the scope, I plan more on focusing on the database/domain aspect rather than getting into stuff such as accounts, internal company moderation and such. Features should be focused on finding the best match for worker and company (focused on schedule, skills, need) , notifying them, and allowing that to work out. 
+
 Initial Database Design and Mechanics:
+
+
 
 AI Utilization Plan: 
 
