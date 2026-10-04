@@ -47,9 +47,60 @@ Primary Key: Composite Key of Shift ID + Worker ID
 Foreign Key: Shift ID and Worker ID
 
 
+
+
 The above makes up 6 tables, and some may end up combined, or more may end up being created, but they seem to handle most of the logic necessary to have workers/companies and to match them up for posted shifts. 
 
+We didn't cover how to define composite keys in class yet, so I just used basic primary keys for all of the below, but note above notes for how composite keys may be implemented for some cases
 SQL for database proposal:
+
+Create Table Worker(
+    Worker_ID VarChar(10) Primary Key,
+    First_Name VarChar(100),
+    Last_Name VarChar(100),
+    Middle_Name VarChar(100)
+)
+
+
+Create Table WorkerSchedule(
+    Schedule_ID VarChar(30) Primary Key,
+    Worker_ID VarChar(10), #Foreign key to worker
+    Date DateTime,
+    Start_Time Time,
+    End_Time Time
+)
+
+Create Table Company(
+    Company_Name VarChar(500) Primary Key,
+    Company_Founded DateTime,
+    Company_Matches Int,
+    Company_Revenue Decimal(32, 2),
+)
+
+Create Table JobType(
+    Job_ID VarChar(10) Primary Key,  #can look at ntoes above to see how it may defined as composite key, but just listing like this for now
+    Company_ID VarChar(500), #Foreign Key to company
+    ...#here will be where skills are listed, a column for each skill type where it is boolean true or false, along with other requirements like "Over 18 required, boolean")
+    Pay_Rate Decimal(32, 2)
+)
+
+Create Table Shift( 
+    Shift_ID VarChar(100) Primary Key, #can look at notes, to see how it may be defined 
+    Job_ID VarChar(10), #foreign key to jobtype
+    Start_Time DateTime,
+    End_Time DateTime,
+    People_Required Int,
+    People_Available Int
+)
+
+Create Table ShiftWorker(
+    Shift_Worker_ID VarChar(110) Primary Key,
+    Shift_ID VarChar(100), #Foreign key to shifts
+    Worker_ID VarChar(10), #Foreign Key to workers
+    Worker_Arrived Boolean,
+    Hours_Worked Float,
+    Performance_Rating Int   
+)
 
 
 
