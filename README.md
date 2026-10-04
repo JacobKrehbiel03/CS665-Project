@@ -106,6 +106,38 @@ Create Table ShiftWorker(
 
 Relational Algebra Example Queries (could also do in SQL, but the check in specifically requests in relational algebra):
 
+σ, π, ∩, ∪, ⋈
+
+
+1)
+
+Names of all workers who have worked for Company A
+
+π_Worker.First_Name and Worker.Last_Name(((((σ_Company=="Company A"(Company)) ⋈ (JobType)) ⋈ (Shift)) ⋈  ShiftWorker) ⋈ Worker)
+
+
+2)
+
+All shifts that employee with name Jacob has shown up for
+
+(((σ_Worker.First_Name == "Jacob"(Worker)) ⋈ (π_Worker_Arrived==True(ShiftWorker)) ⋈ Shift)
+
+
+3) Companies that have jobs available for people under 18
+
+
+π_Company_Name(σ_Over_18 == False(JobType) ⋈ Company)
+
+4) All dates that employees with last name Richard are able to work after 2 PM 
+
+
+ π_Date((σ_Last_Name == "Richard"(Worker)) ⋈ (σ_End_Time >= 2:00 PM (σ_Start_Time <= 2:00 PM(WorkerSchedule))))
+
+
+5) Shift IDs that paid over 10 dollars an hour and had the full amount of people requested
+
+
+ π_Shift_ID((σ_Pay_Rate > 10.00(Worker)) ⋈ (σ_People_Available>=People_Required(Shift)))
 
 
 
