@@ -173,4 +173,44 @@ For the sake of this project, there may be another category implemented, that be
 # Check in 2 entries:
 
 
+In order to check the verification of the table, I will check if every table is 1NF, then 2NF, then 3NF and so on, and making necessary changes when any mistakes are seen at each stage.
+Refer to the design of tables designated in check-in 1 to refer to schema.
+
+1NF:
+Reminder, check that each table has 1) No features that contain a vector for each record 2) Primary Key Identified
+
+Worker:
+
+Has primary key identified, none of the features are vectors
+
+WorkerSchedule:
+
+Has primary key identified, none of the features are vectors
+
+Company:
+
+Primary Key identified, none of the features are vectors.
+
+JobType:
+
+Primary key identified, none of the features are vectors
+
+Shift:
+
+Primary key identified, none of the features are vectored
+
+ShiftWorker:
+
+Primary key identified, none of the features are vectors.
+
+
+So, the schema is normalized up to 1NF.
+
+Before 2NF, I will update the table's designs to make composite key's explicit because in check-in 1 I only proposed how each one may be defined. I will define them now so that the 2NF check can be meaningful. 
+
+Updated Schema:
+
+
+
+
 # Check in 3 entries:
