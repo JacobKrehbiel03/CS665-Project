@@ -1,0 +1,25 @@
+AI Log
+
+Entry 1:
+
+    Date: 10/29/2026 8:00 PM
+    Query: Composite key syntax in SQL in create table
+    Platform: Gemini (was using google)
+    Output:
+        CREATE TABLE order_items (
+            order_id INT NOT NULL,
+            product_id INT NOT NULL,
+            quantity INT,
+            price DECIMAL(10, 2),
+            -- Define the composite primary key at the table level
+            PRIMARY KEY (order_id, product_id)
+
+        CREATE TABLE enrollment (
+            student_id INT NOT NULL,
+            course_id INT NOT NULL,
+            enrollment_date DATE,
+            -- Naming the composite key constraint
+            CONSTRAINT pk_student_course PRIMARY KEY (student_id, course_id)
+        );
+        Purpose: I wanted to make sure I knew the way to indiicate a composite key for my table designs. 
+);
