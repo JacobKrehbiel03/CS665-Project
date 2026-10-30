@@ -210,7 +210,97 @@ Before 2NF, I will update the table's designs to make composite key's explicit b
 
 Updated Schema:
 
+#No Changes except making plural
+Create Table Workers(
+    Worker_ID VarChar(10) Primary Key,
 
+    First_Name VarChar(100),
+
+    Last_Name VarChar(100),
+
+    Middle_Name VarChar(100)
+)
+
+
+#
+# I wish to do a composite key as primary, but it seems that Worker + Date would not be sufficent
+# That would make it so there would not be possible for a worker to have multiple time regions with gaps avaialble on same day (ie: 2:00 PM to 5:00 PM and then 6:00 PM to 8:00 PM)
+# So I just updated the foreign key to be more explicity
+Create Table WorkerSchedules(
+    Schedule_ID VarChar(30) Primary Key,
+
+    Worker_ID VarChar(10), #Foreign key to worker
+
+    Date DateTime,
+
+    Start_Time Time,
+
+    End_Time Time
+
+    Foreign Key (Worker_ID) References Workers(Worker_ID)
+)
+
+
+# No need to make composite key, company name should be a unique identified already
+Create Table Companies(
+    Company_Name VarChar(500) Primary Key,
+
+    Company_Founded DateTime,
+
+    Company_Matches Int,
+
+    Company_Revenue Decimal(32, 2),
+)
+
+# Added job title
+# Made foreign key explicit
+# Made composite key of company ID and job title, and removed old primary key
+# Skills still left blank, as it is really is the sort of thing that ought to be added as I think of relevant skills for the companies I include as example cases
+# Don't want to add painting as skill, if it is never relevant for instance
+Create Table JobTypes(
+    Company_ID VarChar(500), #Foreign Key to company
+
+    Job_Title VarChar(100) Non-Null, 
+    ...#here will be where skills are listed, a column for each skill type where it is boolean true or false, along with other requirements like "Over 18 required, boolean")
+
+    Pay_Rate Decimal(32, 2)
+
+    Primary Key (Company_ID, Job_Title)
+
+    Foreign Key (Company_ID) References Companies(Company_ID)
+)
+
+
+# Added location as new required aspect that will end up being part of composite
+# Updated Job_ID to match the changes made in JobTypes (Split into Company_ID, Job_Title)
+# Make composite key (fairly complicated, but it does seem the minimum to uniquely identify for this section)
+# 
+
+Create Table Shifts( 
+    Shift_ID VarChar(100) Primary Key, #can look at notes, to see how it may be defined 
+
+    Company_ID VarChar(500), 
+
+    Job_Title VarChar(100) Non-Null, 
+
+    Start_Time DateTime,
+
+    End_Time DateTime,
+
+    People_Required Int,
+
+    People_Available Int
+
+)
+
+Create Table ShiftWorker(
+    Shift_Worker_ID VarChar(110) Primary Key,
+    Shift_ID VarChar(100), #Foreign key to shifts
+    Worker_ID VarChar(10), #Foreign Key to workers
+    Worker_Arrived Boolean,
+    Hours_Worked Float,
+    Performance_Rating Int   
+)
 
 
 # Check in 3 entries:
