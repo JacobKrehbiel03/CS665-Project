@@ -241,7 +241,7 @@ Create Table WorkerSchedules(
 
     Start_Time Time,
 
-    End_Time Time
+    End_Time Time,
 
     Foreign Key (Worker_ID) References Workers(Worker_ID)
 )
@@ -272,51 +272,90 @@ Don't want to add painting as skill, if it is never relevant for instance
 
 ```
 Create Table JobTypes(
-    Company_ID VarChar(500), #Foreign Key to company
+    Company_ID VarChar(500) Non-Null, #Foreign Key to company
 
     Job_Title VarChar(100) Non-Null, 
     ...#here will be where skills are listed, a column for each skill type where it is boolean true or false, along with other requirements like "Over 18 required, boolean")
 
-    Pay_Rate Decimal(32, 2)
+    Pay_Rate Decimal(32, 2),
 
-    Primary Key (Company_ID, Job_Title)
+    Constraint Job_ID Primary Key (Company_ID, Job_Title),
 
     Foreign Key (Company_ID) References Companies(Company_ID)
 )
 ```
 
 Added location as new required aspect that will end up being part of composite
-Updated Job_ID to match the changes made in JobTypes (Split into Company_ID, Job_Title)
+
 Make composite key (fairly complicated, but it does seem the minimum to uniquely identify for this section)
  
+I will discuss the decision more in 2NF, but it does seem difficult to use much less to define a shift uniquely, and I do believe nearly all of these attributes are consquences of all four, but that will be examined later (and potentially updated)
+
+
 ```
 Create Table Shifts( 
-    Shift_ID VarChar(100) Primary Key, #can look at notes, to see how it may be defined 
-
-    Company_ID VarChar(500), 
+    Company_ID VarChar(500) Non-Null, 
 
     Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
 
-    Start_Time DateTime,
+    Start_Time DateTime Non-Null,
 
-    End_Time DateTime,
+    End_Time DateTime Non-Null,
 
     People_Required Int,
 
-    People_Available Int
+    People_Available Int,
+
+    Constraints Shift_ID Primary Key (Company_ID, Job_Title,  Location, Start_Time),
+
+    Foreign Key (Company_ID, Job_Title) References JobTypes(Job_ID)
 )
 ```
 
-```
-Create Table ShiftWorker(
 
-    Shift_Worker_ID VarChar(110) Primary Key,
-    Shift_ID VarChar(100), #Foreign key to shifts
-    Worker_ID VarChar(10), #Foreign Key to workers
+
+Removed Shift_Worker_ID to make it a composite key
+
+For 2NF normalization purposes, will consider the 4 compoments to be the aspect of a "Shift", and will therefore only consider if each attribute depends on shift, and if each attribute depends on worker
+
+```
+Create Table ShiftWorkers(
+
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    Worker_ID VarChar(10) Non-Null, #Foreign Key to workers
+
     Worker_Arrived Boolean,
+
     Hours_Worked Float,
-    Performance_Rating Int   
+
+    Performance_Rating Int,
+
+    Constraint Shift_ID Foreign Key (Company_ID, Job_Title, Location, Start_Time) References Shifts(Shift_ID)
+
+    Constraint Shift_Worker_ID Primary Key (Shift_ID, Worker_ID) 
 )
 ```
+I orignally was not using the constraints to refer to composite keys, but then I realized that it increased the complexity of how statements looked, so I started using it.
+
+I am uncertain as if to I should do it from the start for each table (ie: In ShiftWorkers, remove the four variabels that comprise Shift_ID and only leave Shift_ID)
+
+I don't intend the table to be focused around those features, but they are necessary to identify the shift specifically, which is necessary. 
+
+I could theoretically just replace them with Shift_ID and have the varchar length be the composite of the other variables, but that like one is just trying to hide what is happening underneath. The same amount of storage space will be used, no matter whether I call it 4 variables or just 1 that is the pasting of them. 
+
+
+Another thing I am slightly uncertain on is whether to include the foreign key relations that are 'irrelevant' for a table. For instance, ShiftWorkers only includes Company_ID as it is necessary to form the Shift_ID, but I am uncertain to whether I should include the foreign key relation of Company_ID to Companies, or just include the composite key foreign relation to Shifts. 
+
+2NF Normalization (Checking/Making changes if necessary):
+
 
 # Check in 3 entries:
