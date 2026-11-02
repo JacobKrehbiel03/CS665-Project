@@ -226,9 +226,9 @@ Create Table Workers(
 ```
 
 
-I wish to do a composite key as primary, but it seems that Worker + Date would not be sufficent
+I wish to do a composite key as primary, but it seems that Worker + Date would not be sufficent 
 
-That would make it so there would not be possible for a worker to have multiple time regions with gaps avaialble on same day (ie: 2:00 PM to 5:00 PM and then 6:00 PM to 8:00 PM)
+That would make it so there would not be possible for a worker to have multiple time regions with gaps avaialble on same day (ie: 2:00 PM to 5:00 PM and then 6:00 PM to 8:00 PM). Additionally, adding any more attributes being added to composite keys seems excessive. 
 
 So I just updated the foreign key to be more explicity
 ```
@@ -357,5 +357,122 @@ Another thing I am slightly uncertain on is whether to include the foreign key r
 
 2NF Normalization (Checking/Making changes if necessary):
 
+For 2NF normalization, I need to only inspect the tables that have composite keys, because the 2NF condition is that each feature/attribute relies on each piece of the composite key.
 
+Effectively, this will be examined by seeing if components of the composite key are enough to uniquely identify each entry. 
+
+```
+Create Table JobTypes(
+    Company_ID VarChar(500) Non-Null, #Foreign Key to company
+
+    Job_Title VarChar(100) Non-Null, 
+    ...#here will be where skills are listed, a column for each skill type where it is boolean true or false, along with other requirements like "Over 18 required, boolean")
+
+    Pay_Rate Decimal(32, 2),
+
+    Constraint Job_ID Primary Key (Company_ID, Job_Title),
+
+    Foreign Key (Company_ID) References Companies(Company_ID)
+)
+```
+
+Above is JobTypes, the pieces of composite key are company_id and job_title.
+
+Let us observe if each of the features requires both.
+
+Any skill based features -> requires both: Company is not enough as different jobs at same company have different skill requirements. Job Title is not sufficent as the same job title may have different skill requirements depending on the company. 
+
+Pay rate -> requires both: Company is not enough, different jobs can have different pay rates for same company. Job title is not enough, as the same job title can have different pay rates for different companies.
+
+That is all covered, so JobTypes is 2NF.
+
+
+```
+Create Table Shifts( 
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    End_Time DateTime Non-Null,
+
+    People_Required Int,
+
+    People_Available Int,
+
+    Constraints Shift_ID Primary Key (Company_ID, Job_Title,  Location, Start_Time),
+
+    Foreign Key (Company_ID, Job_Title) References JobTypes(Job_ID)
+)
+```
+
+
+Shifts is above, the pieces of the composite key can be identified as the company id, job title, location, and start time. Notably, the company id and job title are somewhat already grouped together as job type.
+
+end time -> All is required. 
+
+Same job title, location, start may be a different length shift (and therefore different end time) depending on the comapny (ie: two offices in same building, one has a 6 hour shift and other has a 8), so end time does depend on company.
+
+Same company, location, and start time may have different length shift, depending job title (ie: boss and shift workers stay different amounts of time at same office), so end time does depend on job title 
+
+Same company, job title, and start time may have different length shift depending on location (ie: two offices for same company, and new one is a newer location so has longer workdays, so different end times)
+
+Same company, job title, and location may have different end time depending on start time (ie: night shift and day shift have different end tiems but all same company, title, location)
+
+
+people required/people available-> These two have the same logic so grouped.
+
+Same job title, location, start time may have different manpower requirements depending on company (ie: Two accounting firms in same office, where one of them employs 10 and the other 8, the company is only way to distinguish)
+
+Same company, location, start time may have different manpower requirements depending on job title (ie: Only one manager, but 8 shift workers for same location, company and start time)
+
+Same company, job title, start time may have different manpower requirements depending on location (ie: Second office from same company with same types of workers may have less employees (perhaps newer office, so not as much talent hired yet))
+
+Same company, job title, and location may have different manpower requirements depending on start time (ie: Day shift has 10 employees, night shift has 5 employees due to the fact less work expected at night)
+
+
+So, shifts is 2NF. 
+
+
+```
+Create Table ShiftWorkers(
+
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    Worker_ID VarChar(10) Non-Null, #Foreign Key to workers
+
+    Worker_Arrived Boolean,
+
+    Hours_Worked Float,
+
+    Performance_Rating Int,
+
+    Constraint Shift_ID Foreign Key (Company_ID, Job_Title, Location, Start_Time) References Shifts(Shift_ID)
+
+    Constraint Shift_Worker_ID Primary Key (Shift_ID, Worker_ID) 
+)
+```
+
+To make discussing this simpler, shift id composites will be treated together. When discussing, it will be treated as if the attribute depends on the "shift" which will then quality as the company, job, location, and start time as those are the required features to uniquely identify a shift. 
+
+Worker_arrived -> Shifts have multiple workers that may arrive, and workers have multiple shifts, so both are needed to identify.
+
+Hours_worker -> Shifts may have different workers end up working a different amount of the full hours of shift, so worker is required. Different workers may work different shifts where they work different number of hours, so depends on both.
+
+Performance_rating -> Shifts may have multiple employees getting different performance ratings, so worker is required clearly. Same worker may get multiple different performance reviews depending on the shift, so shift is necessary. 
+
+
+So all tables were in 2NF already, though some did a get bit complicated to think about due to the amount of keys involved in the composite key. 
+
+
+3NF normalization is next:
 # Check in 3 entries:
