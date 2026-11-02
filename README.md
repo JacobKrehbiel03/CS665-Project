@@ -689,4 +689,8 @@ Update anomaly:
 2 Suppose that shift workers was joined with shifts as a single table. If one was to update a specific worker's performance report, one may accidently update all of the workers for that shift's performance report, which would be an update anomaly. This would be less likely/impossible to occur in 3NF (if they were joined, 2NF would make them split as people required would not depend on worker id(and worker id would be part of the composite key))
 
 
+That is all of the requested details for check-in 2, as the Entity Role Diagram was moved to check in 3. 
+
+Since, I did not do too much for app features/development, I made app features.txt that contains a thorough list of the features/user stories I want to have for the final app version to guide my development in the next month. 
+
 # Check in 3 entries:

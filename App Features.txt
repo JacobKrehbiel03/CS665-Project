@@ -1,0 +1,26 @@
+
+App features:
+
+Users can choose to sign in (no full sign in feature planned, just for the sake of accessing a worker or company account, so perhaps a password/username added to those, but not necssarily full security)
+
+
+
+As a company:
+    update company details
+    add/update new job type
+    add new shift for a job type
+    cancel shift for a job type
+    agree to worker for shift
+    give performance reviews for workers for a job
+
+As a worker:
+    update worker details
+    update/add to schedule
+    view possible jobs for schedule/skills
+    agree to sign up for shift
+
+The app itself will:
+    compile average worker score (to serve to company when choosing to accept employee)
+    calculate which jobs a worker is available for
+    calculate which workers a job has access to
+
