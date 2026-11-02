@@ -658,4 +658,35 @@ So now, with the updated table for shiftworkers, all tables are in 3NF.
 
 
 
+
+
+
+Problem solving journey:
+
+I apologize, but as I have not done the code/except for the in the abtract sense of what I want my app to be, I don't have much to list in my journey for discovering anomalies.
+
+Functional dependcies have been listed throughout the 1NF, 2NF, and 3NF step by step normalization process. 
+
+In lieu of having anomalies that I actually observed, I will write 2 examples of each type of anomaly that could have occured in a worse data structuring.
+
+Insertion anomaly:
+
+1 If companies was joined with jobtypes, they would not be able to create a company without also creating a job (maybe with null characterstics). This would be an insertion anomaly. 3NF dealt with this as job details would rely on job id alone, so transitive relation with company_id. Or we could say 2NF because company details would not rely on job_id if we made that a composite key.
+
+2 If workers was joined with worker schedules, one would not be able to create their profile without also creating a schedule entry. This would be an insertion anomaly. This would be fixed by 2NF as the composite key would be schedule id and worker id, presumably, and the worker details like skills/age/name would not depend on the schedule id part of the composite key at all (so 2NF would force split). 
+
+Deletion anomaly:
+
+1 Suppose companies was joined with job types as a single table. If one company was to have only a single job type, if that job type was deleted, all of the companies detail's would be deleted as well. This would be a deletion anomaly and does not occur because of the companies and jobs being seperate tables (They were from the start, but 3NF would seperate them as the job details would rely on the job id alone, so transitive relation with company, so require fix. Or we could say 2NF because company details would not rely on job_id if we made that a composite key)
+
+2 Suppose workers was joined with worker schedules as a single table. If a worker had only one existing schedule, and then decided to delete it as they changed their mind, it would delete their details. This would be espically annoying as that worker would need to re-enter everything. This would be a deletion anomaly. This would be avoided by 2NF as the composite key would be schedule id and worker id, presumably, and the worker details like skills/age/name would not depend on the schedule id part of the composite key at all (so 2NF would force the split)
+
+Update anomaly:
+
+1 Suppose that companies was joined with job types as a single table. If one was to have a job appear twice for a company, and we wanted to update the payrate, we may update one of the record's pay rates but not all of them. This would be an update anomaly which is avoided because of the 3NF (3NF would say to seperate as if they were joined, the job details would not rely on the company id, but the job id, so transitive. Or we could say 2NF because company details would not rely on job_id if we made that a composite key.
+)
+
+2 Suppose that shift workers was joined with shifts as a single table. If one was to update a specific worker's performance report, one may accidently update all of the workers for that shift's performance report, which would be an update anomaly. This would be less likely/impossible to occur in 3NF (if they were joined, 2NF would make them split as people required would not depend on worker id(and worker id would be part of the composite key))
+
+
 # Check in 3 entries:
