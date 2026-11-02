@@ -523,7 +523,7 @@ End time does not depend on date, for same reason as start time. End time does n
 
 Worker_id does not depend on date, worker can work for multiple days. Worker does not depend on start time, end time, as same worker can have multiple start or end times. 
 
-
+So WorkerSchedules is in 3NF
 
 ```
 Create Table Companies(
@@ -551,6 +551,8 @@ Revenue does not depend on company matches. Knowing the number of matches does n
 
 As it seems, I realized the above is a shorter way to describe a dependency than what I had been using. 
 
+So companies is in 3NF
+
 ```
 Create Table JobTypes(
     Company_ID VarChar(500) Non-Null, #Foreign Key to company
@@ -565,6 +567,8 @@ Create Table JobTypes(
     Foreign Key (Company_ID) References Companies(Company_ID)
 )
 ```
+
+There is only one non-prime aspect to the table, so it can't depend on on any non-prime attributes, so in 3NF. 
 
 ```
 Create Table Shifts( 
@@ -587,6 +591,14 @@ Create Table Shifts(
     Foreign Key (Company_ID, Job_Title) References JobTypes(Job_ID)
 )
 ```
+
+End time does not depend on people required or people available. Knowing the people required or people available cannot tell you the end time of the job.
+
+People required does not depend on end time. Knowing the end time is not sufficent to tell you the people required. The same is true for people available. 
+
+People required does not depend on people available. They are clearly related, but neither directly tell the other. People required is >= people available (reminder available means available/selected/recruited so far). 
+
+This table is in 3NF then. 
 
 ```
 Create Table ShiftWorkers(
@@ -612,6 +624,38 @@ Create Table ShiftWorkers(
     Constraint Shift_Worker_ID Primary Key (Shift_ID, Worker_ID) 
 )
 ```
+
+
+Worker arrived actually does depend on hours worked, so we discovered a violation for 3NF. Knowing that a worker worked any hours >=0 tells you the worker arrived, and seeing the worker worked 0 hour tells you the worker did not arrive. So, to update for 3NF we ought to remove worker arrived, as it has strictly less information than worker arrived. 
+
+```
+Create Table ShiftWorkers(
+
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    Worker_ID VarChar(10) Non-Null, #Foreign Key to workers
+
+    Hours_Worked Float,
+
+    Performance_Rating Int,
+
+    Constraint Shift_ID Foreign Key (Company_ID, Job_Title, Location, Start_Time) References Shifts(Shift_ID)
+
+    Constraint Shift_Worker_ID Primary Key (Shift_ID, Worker_ID) 
+)
+```
+
+Hours worked does not depend on performance rating. We can imagine there is some correlation where if a worker doesnt work full shift, it may be bad on performance rating, but a bad performance rating can occur for a less than full shift and vice versa. Same logic to show there is no opposite deppendency.
+
+
+So now, with the updated table for shiftworkers, all tables are in 3NF.
+
 
 
 # Check in 3 entries:
