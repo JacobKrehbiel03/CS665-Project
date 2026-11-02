@@ -475,4 +475,143 @@ So all tables were in 2NF already, though some did a get bit complicated to thin
 
 
 3NF normalization is next:
+
+For 3NF normalization, we look for transitive dependinces. That is, for a non-composite/primary key feature of the table has things that depend on it. 
+
+We can see if A depends on B, by viewing if B is enough to identify A. So we can see if different records with A can have different B values. 
+
+```
+Create Table Workers(
+
+    Worker_ID VarChar(10) Primary Key,
+
+    First_Name VarChar(100),
+
+    Last_Name VarChar(100),
+
+    Middle_Name VarChar(100)
+)
+```
+
+Does first name depend on last name or middle name? No, people with same first name can have different different last names or middle names. 
+
+Does last name depend on last name or middle name? Logic above applies fairly simply.
+
+Workers is in 3NF.
+
+```
+Create Table WorkerSchedules(
+    Schedule_ID VarChar(30) Primary Key,
+
+    Worker_ID VarChar(10), #Foreign key to worker
+
+    Date DateTime,
+
+    Start_Time Time,
+
+    End_Time Time,
+
+    Foreign Key (Worker_ID) References Workers(Worker_ID)
+)
+```
+
+Date does not depend on worker, as multiple workers may select the same datetime. Same for start time and end time. 
+
+Start time does not depend on date time, as multiple days can have same start time. Start times does not depend on end time;  multiple end times may exist for same end time.
+
+End time does not depend on date, for same reason as start time. End time does not depend on start time, multiple start times exist for same end time.
+
+Worker_id does not depend on date, worker can work for multiple days. Worker does not depend on start time, end time, as same worker can have multiple start or end times. 
+
+
+
+```
+Create Table Companies(
+    Company_Name VarChar(500) Primary Key,
+
+    Company_Founded DateTime,
+
+    Company_Matches Int,
+
+    Company_Revenue Decimal(32, 2),
+)
+```
+
+Company founded date does not depend on company matches. Multiple companies with say 15 matches, and they have different company founded dates. There is nothing wrong with such an idea, though it may be rare for multiple companies to have the same number of matches.
+
+Company founded date does not depend on company revenue. Multiple companies may have the same revenue, and they won't all be the same founding date (or at least not inherently). 
+
+Company matches does not depend on company founded date. Companies with the same founding date does not tell the same number of matches.
+
+Company matches does not depend on revenue. Knowing revenue does not tell you the number of matches. 
+
+Revenue does not depend on founded date. Knowing the founding date does not tell you the revenue.
+
+Revenue does not depend on company matches. Knowing the number of matches does not tell you the revenue. 
+
+As it seems, I realized the above is a shorter way to describe a dependency than what I had been using. 
+
+```
+Create Table JobTypes(
+    Company_ID VarChar(500) Non-Null, #Foreign Key to company
+
+    Job_Title VarChar(100) Non-Null, 
+    ...#here will be where skills are listed, a column for each skill type where it is boolean true or false, along with other requirements like "Over 18 required, boolean")
+
+    Pay_Rate Decimal(32, 2),
+
+    Constraint Job_ID Primary Key (Company_ID, Job_Title),
+
+    Foreign Key (Company_ID) References Companies(Company_ID)
+)
+```
+
+```
+Create Table Shifts( 
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    End_Time DateTime Non-Null,
+
+    People_Required Int,
+
+    People_Available Int,
+
+    Constraints Shift_ID Primary Key (Company_ID, Job_Title,  Location, Start_Time),
+
+    Foreign Key (Company_ID, Job_Title) References JobTypes(Job_ID)
+)
+```
+
+```
+Create Table ShiftWorkers(
+
+    Company_ID VarChar(500) Non-Null, 
+
+    Job_Title VarChar(100) Non-Null, 
+ 
+    Location VarChar(500) Non-Null, 
+
+    Start_Time DateTime Non-Null,
+
+    Worker_ID VarChar(10) Non-Null, #Foreign Key to workers
+
+    Worker_Arrived Boolean,
+
+    Hours_Worked Float,
+
+    Performance_Rating Int,
+
+    Constraint Shift_ID Foreign Key (Company_ID, Job_Title, Location, Start_Time) References Shifts(Shift_ID)
+
+    Constraint Shift_Worker_ID Primary Key (Shift_ID, Worker_ID) 
+)
+```
+
+
 # Check in 3 entries:
